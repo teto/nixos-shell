@@ -33,7 +33,8 @@ nix-build '<nixpkgs/nixos>' -A vm -k \
 
 
 # need my fork that makes nixosTesting globally available
-nix-build -A nixosTesting.testDriver  '<nixpkgs>' -o "${tempdir}/test-driver"
+# nix-build -A nixosTesting.testDriver  '<nixpkgs>' -o "${tempdir}/test-driver"
+nix-build -A testMatt "${script_dir}/../share/nixos-shell/nixos-shell.nix"  -o "${tempdir}/test-driver"
 
 
 # Look at makeTests in nixos/lib/testing.nix to see how it is called

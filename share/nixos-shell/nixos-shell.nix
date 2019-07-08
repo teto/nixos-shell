@@ -1,7 +1,9 @@
 { lib, options, config, pkgs, ... }:
 
 let
-  nixos_config = builtins.getEnv "QEMU_NIXOS_CONFIG";
+  # nixos_config = builtins.getEnv "QEMU_NIXOS_CONFIG";
+  # hardcoding for now
+  nixos_config = "/home/teto/mptcp-pm/vm.nix";
   cfg = config.nixos-shell;
 
   mkVMDefault = lib.mkOverride 900;
