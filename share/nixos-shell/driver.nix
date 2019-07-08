@@ -1,7 +1,17 @@
 # TODO pass lib
 with import <nixpkgs> {};
+
+let
+
+    # TODO we can pass the nixos-shell,nix ?
+    buildVMs = import <nixpkgs/nixos/lib/build-vms.nix> { inherit system pkgs;
+    minimal = false;
+    # extraConfigurations;
+  };
+
 # { pkgs, lib, ... }:
 # with pkgs;
+in
 rec {
 
   # import nixos-shell.nix
@@ -33,10 +43,13 @@ rec {
   };
 
 
+  nodes = buildVMs.buildVirtualNetwork (
+        t.nodes or (if t ? machine then { machine = t.machine; } else { }));
+
   # vm = vmConfig.system.build.vm;
 
   # my network of nodes
-  testMatt = driver tempNodes;
+  testMatt = driver nodes;
 
   output = pkgs.nixosTesting.runInMachine {
     drv = pkgs.hello;
@@ -82,6 +95,7 @@ rec {
       wrapProgram $out/bin/nixos-run-vms \
         --add-flags "''${vms[*]}" \
         --set VLANS '${toString vlans}' \
+        --set tests 'startAll; joinAll;' \
         ${lib.optionalString (builtins.length vms == 1) "--set USE_SERIAL 1"}
     ''; # "
 }
