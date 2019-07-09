@@ -27,18 +27,18 @@ cleanup() {
 trap cleanup EXIT SIGINT SIGQUIT ERR
 
 # le vm fait en fait reference a vm = vmConfig.system.build.vm;
-nix-build '<nixpkgs/nixos>' -A vm -k \
-  -I "nixos-config=${script_dir}/../share/nixos-shell/nixos-shell.nix" \
-  -o "${tempdir}/result" "$@"
+# nix-build '<nixpkgs/nixos>' -A vm -k \
+#   -I "nixos-config=${script_dir}/../share/nixos-shell/nixos-shell.nix" \
+#   -o "${tempdir}/result" "$@"
 
 
 # need my fork that makes nixosTesting globally available
 # nix-build -A nixosTesting.testDriver  '<nixpkgs>' -o "${tempdir}/test-driver"
-nix-build -A testMatt "${script_dir}/../share/nixos-shell/nixos-shell.nix"  -o "${tempdir}/test-driver"
+nix-build -A testMatt "${script_dir}/../share/nixos-shell/driver.nix"  -o "${tempdir}/test-driver"
 
 
 # Look at makeTests in nixos/lib/testing.nix to see how it is called
-"${tempdir}/test-driver/bin/nixos-test-driver"
+# "${tempdir}/test-driver/bin/nixos-test-driver"
 
 # ln -s ${testDriver}/bin/nixos-test-driver $out/bin/
 # vms=($(for i in ${toString vms}; do echo $i/bin/run-*-vm; done))

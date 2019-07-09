@@ -4,8 +4,9 @@ with import <nixpkgs> {};
 let
 
     # TODO we can pass the nixos-shell,nix ?
-    buildVMs = import <nixpkgs/nixos/lib/build-vms.nix> { inherit system pkgs;
-    minimal = false;
+    buildVMs = import <nixpkgs/nixos/lib/build-vms.nix> {
+      inherit system pkgs;
+      minimal = false;
     # extraConfigurations;
   };
 
@@ -14,32 +15,24 @@ let
 in
 rec {
 
-  # import nixos-shell.nix
-  # import vm.nix
 
+  # did that require a change to nixpkgs ?
   testDriver = pkgs.nixosTesting.testDriver;
-
-  # TODO choper ceux de vm.nix
-  # vlans = [ 1 2 ];
-
 
   # results in /nix/store/pg6ylfi07igw98xgqjc5ag90gr0dkbs7-nixos-vm
   myVmConfig = (import <nixpkgs/nixos> {
 
     # unexpected argument
-    # le pb c que la on ne passe pas le vm.nix ? il est contenu dedans
-    # configuration = ./share/nixos-shell/nixos-shell.nix;
     # export QEMU_NIXOS_CONFIG="$(readlink -f "$nixos_config")"
     # will import the config defined by QEMU_NIXOS_CONFIG
     configuration = ./nixos-shell.nix;
   });
 
-  myVm = myVmConfig.vm;
+  # nix-build '<nixpkgs/nixos>' -A vm -k -I "nixos-config=${script_dir}/../share/nixos-shell/nixos-shell.nix" \
 
-# nix-build '<nixpkgs/nixos>' -A vm -k \
-#   -I "nixos-config=${script_dir}/../share/nixos-shell/nixos-shell.nix" \
+  # format expected by the testing infra
   tempNodes = {
-    toto = myVmConfig;
+    main = myVmConfig;
   };
 
 
@@ -69,9 +62,8 @@ rec {
   };
 
   # copied and adapted from nixos/lib/testing.nix
-  # il attend des vmConfig comme decrit dans nixos/default.nix
+  # expects a set of vmConfig as described in nixos/default.nix
   driver = nodes:
-  # vms=($(for i in ${toString vms}; do echo $i/bin/run-*-vm; done))
     let
       vms = map (m: m.config.system.build.vm) (lib.attrValues nodes);
 
@@ -82,7 +74,6 @@ rec {
       preferLocalBuild = true;
       testName = "matt";
     }
-    # got rid of --set tests 'startAll; joinAll;' \
     ''
       mkdir -p $out/bin
       ln -s ${testDriver}/bin/nixos-test-driver $out/bin/
