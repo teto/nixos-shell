@@ -24,7 +24,8 @@ tempdir=$(mktemp -d)
 cleanup() {
   rm -rf "$tempdir"
 }
-trap cleanup EXIT SIGINT SIGQUIT ERR
+# trap cleanup EXIT SIGINT SIGQUIT ERR
+# trap cleanup EXIT SIGINT SIGQUIT ERR
 
 # le vm fait en fait reference a vm = vmConfig.system.build.vm;
 # nix-build '<nixpkgs/nixos>' -A vm -k \
@@ -32,9 +33,11 @@ trap cleanup EXIT SIGINT SIGQUIT ERR
 #   -o "${tempdir}/result" "$@"
 
 
+echo "Exporting QEMU_NIXOS_CONFIG=$QEMU_NIXOS_CONFIG"
+
 # need my fork that makes nixosTesting globally available
 # nix-build -A nixosTesting.testDriver  '<nixpkgs>' -o "${tempdir}/test-driver"
-nix-build -A testMatt "${script_dir}/../share/nixos-shell/driver.nix"  -o "${tempdir}/test-driver"
+nix-build -A testMatt "${script_dir}/../share/nixos-shell/driver.nix"  -o "${tempdir}/result"
 
 
 # Look at makeTests in nixos/lib/testing.nix to see how it is called
@@ -55,4 +58,5 @@ nix-build -A testMatt "${script_dir}/../share/nixos-shell/driver.nix"  -o "${tem
 #   --set tests 'startAll; joinAll;' \
 #   --set VLANS '${toString vlans}' \
 #   ${lib.optionalString (builtins.length vms == 1) "--set USE_SERIAL 1"}
-"${tempdir}/result/bin/"run-*-vm
+# "run-*-vm
+"${tempdir}/result/bin/nixos-run-vms

@@ -36,8 +36,8 @@ rec {
   };
 
 
-  nodes = buildVMs.buildVirtualNetwork (
-        t.nodes or (if t ? machine then { machine = t.machine; } else { }));
+  nodes = buildVMs.buildVirtualNetwork ( tempNodes );
+        # t.nodes or (if t ? machine then { machine = t.machine; } else { }));
 
   # vm = vmConfig.system.build.vm;
 
