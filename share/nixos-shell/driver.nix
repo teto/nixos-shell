@@ -1,7 +1,10 @@
 # TODO pass lib
 with import <nixpkgs> {};
+# { options, config, pkgs, ... }:
 
 let
+
+  # lib = pkgs.lib;
 
     # TODO we can pass the nixos-shell,nix ?
     buildVMs = import <nixpkgs/nixos/lib/build-vms.nix> {
@@ -36,30 +39,24 @@ rec {
   };
 
 
-  nodes = buildVMs.buildVirtualNetwork ( tempNodes );
+  # buildVirtualNetwork will change the returned result
+  # nodes = buildVMs.buildVirtualNetwork ( tempNodes );
+  nodes = assignIPAddresses ( tempNodes );
         # t.nodes or (if t ? machine then { machine = t.machine; } else { }));
 
   # vm = vmConfig.system.build.vm;
 
   # my network of nodes
-  testMatt = driver nodes;
+  testMatt = driver tempNodes;
 
-  output = pkgs.nixosTesting.runInMachine {
-    drv = pkgs.hello;
-    machine =  { ... }: { /* services.sshd.enable = true; */ };
-    # myVmConfig.config;
-    preBuild = ''
-      $client->succeed("env -i ${bash}/bin/bash");
-    '';
-
-    # This is the original testScript
-        # startAll;
-        # $client->waitForUnit("multi-user.target");
-        # ${preBuild}
-        # $client->succeed("env -i ${bash}/bin/bash ${buildrunner} /tmp/xchg/saved-env >&2");
-        # ${postBuild}
-        # $client->succeed("sync"); # flush all data before pulling the plug
-  };
+  # output = pkgs.nixosTesting.runInMachine {
+  #   drv = pkgs.hello;
+  #   machine =  { ... }: { /* services.sshd.enable = true; */ };
+  #   # myVmConfig.config;
+  #   preBuild = ''
+  #     $client->succeed("env -i ${bash}/bin/bash");
+  #   '';
+  # };
 
   # copied and adapted from nixos/lib/testing.nix
   # expects a set of vmConfig as described in nixos/default.nix
