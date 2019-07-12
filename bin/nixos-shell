@@ -59,4 +59,7 @@ nix-build -A testMatt "${script_dir}/../share/nixos-shell/driver.nix"  -o "${tem
 #   --set VLANS '${toString vlans}' \
 #   ${lib.optionalString (builtins.length vms == 1) "--set USE_SERIAL 1"}
 # "run-*-vm
-"${tempdir}/result/bin/nixos-run-vms"
+# "${tempdir}/result/bin/nixos-run-vms"
+echo "${tempdir}/result/bin/nixos-run-vms"
+# > ./run_vm
+# chmod +x ./run_vm
