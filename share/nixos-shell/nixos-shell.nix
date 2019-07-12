@@ -111,10 +111,12 @@ in {
 
         qemu.options = let
           nixProfile = "/nix/var/nix/profiles/per-user/${user}/profile/";
-        in
+        in lib.mkMerge [ (
           lib.optional cfg.mounts.mountHome "-virtfs local,path=/home,security_model=none,mount_tag=home" ++
           lib.optional (cfg.mounts.mountNixProfile && builtins.pathExists nixProfile) "-virtfs local,path=${nixProfile},security_model=none,mount_tag=nixprofile" ++
-          lib.mapAttrsToList (target: mount: "-virtfs local,path=${builtins.toString mount.target},security_model=none,mount_tag=${mount.tag}") cfg.mounts.extraMounts;
+          lib.mapAttrsToList (target: mount: "-virtfs local,path=${builtins.toString mount.target},security_model=none,mount_tag=${mount.tag}") cfg.mounts.extraMounts
+          )
+        ];
       };
 
       # build-vm overrides our filesystem settings in nixos-config
