@@ -37,7 +37,8 @@ echo "Exporting QEMU_NIXOS_CONFIG=$QEMU_NIXOS_CONFIG"
 
 # need my fork that makes nixosTesting globally available
 # nix-build -A nixosTesting.testDriver  '<nixpkgs>' -o "${tempdir}/test-driver"
-nix-build -A testMatt "${script_dir}/../share/nixos-shell/driver.nix"  -o "${tempdir}/result"
+nix-build -A testMatt "${script_dir}/../share/nixos-shell/driver.nix"  -o "${tempdir}/result" "$@"
+# nix-instantiate -A testMatt "${script_dir}/../share/nixos-shell/driver.nix"  -o "${tempdir}/result"
 
 
 # Look at makeTests in nixos/lib/testing.nix to see how it is called
