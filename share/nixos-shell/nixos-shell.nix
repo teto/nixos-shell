@@ -2,8 +2,6 @@
 
 let
   nixos_config = builtins.getEnv "QEMU_NIXOS_CONFIG";
-  # hardcoding for now
-  # nixos_config = "/home/teto/mptcp-pm/vm.nix";
   cfg = config.nixos-shell;
 
   mkVMDefault = lib.mkOverride 900;
@@ -11,6 +9,8 @@ in {
   imports = lib.optional (nixos_config != "") (builtins.trace "included" nixos_config) ++ [
     <nixpkgs/nixos/modules/virtualisation/qemu-vm.nix>
   ];
+
+  _file = "tata";
 
   options.nixos-shell = with lib; {
     mounts = let
@@ -155,6 +155,5 @@ in {
 
       networking.firewall.enable = mkVMDefault false;
     }
-    ()
   ];
 }
