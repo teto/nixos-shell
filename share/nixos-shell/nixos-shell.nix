@@ -6,11 +6,11 @@ let
 
   mkVMDefault = lib.mkOverride 900;
 in {
-  imports = lib.optional (nixos_config != "") (builtins.trace "included" nixos_config) ++ [
+  imports = 
+  # # lib.optional (nixos_config != "") (builtins.trace "included" nixos_config) ++
+  [
     <nixpkgs/nixos/modules/virtualisation/qemu-vm.nix>
   ];
-
-  _file = "tata";
 
   options.nixos-shell = with lib; {
     mounts = let
@@ -111,12 +111,10 @@ in {
 
         qemu.options = let
           nixProfile = "/nix/var/nix/profiles/per-user/${user}/profile/";
-        in lib.mkMerge [ (
+        in
           lib.optional cfg.mounts.mountHome "-virtfs local,path=/home,security_model=none,mount_tag=home" ++
           lib.optional (cfg.mounts.mountNixProfile && builtins.pathExists nixProfile) "-virtfs local,path=${nixProfile},security_model=none,mount_tag=nixprofile" ++
-          lib.mapAttrsToList (target: mount: "-virtfs local,path=${builtins.toString mount.target},security_model=none,mount_tag=${mount.tag}") cfg.mounts.extraMounts
-          )
-        ];
+          lib.mapAttrsToList (target: mount: "-virtfs local,path=${builtins.toString mount.target},security_model=none,mount_tag=${mount.tag}") cfg.mounts.extraMounts;
       };
 
       # build-vm overrides our filesystem settings in nixos-config
