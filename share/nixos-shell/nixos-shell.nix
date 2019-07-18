@@ -6,9 +6,7 @@ let
 
   mkVMDefault = lib.mkOverride 900;
 in {
-  imports = 
-  # # lib.optional (nixos_config != "") (builtins.trace "included" nixos_config) ++
-  [
+  imports = [
     <nixpkgs/nixos/modules/virtualisation/qemu-vm.nix>
   ];
 

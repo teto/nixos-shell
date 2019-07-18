@@ -2,6 +2,7 @@
 # { pkgs, ... }:
 
 let
+  vm_config = builtins.getEnv "QEMU_NIXOS_CONFIG";
 
   pkgs = import <nixpkgs> {};
 
@@ -9,24 +10,25 @@ let
   buildVMs = import <nixpkgs/nixos/lib/build-vms.nix> {
       inherit (pkgs) system pkgs;
       minimal = false;
-    # extraConfigurations;
+      instrument = false;
+    extraConfigurations = [./nixos-shell.nix];
   };
 
   # results in /nix/store/pg6ylfi07igw98xgqjc5ag90gr0dkbs7-nixos-vm
-  myVmConfig = (import <nixpkgs/nixos> {
+  # myVmConfig = (import <nixpkgs/nixos> {
 
-    # unexpected argument
-    # export QEMU_NIXOS_CONFIG="$(readlink -f "$nixos_config")"
-    # will import the config defined by QEMU_NIXOS_CONFIG
-    # can be a module
-    configuration = ./nixos-shell.nix;
+  #   # unexpected argument
+  #   # export QEMU_NIXOS_CONFIG="$(readlink -f "$nixos_config")"
+  #   # will import the config defined by QEMU_NIXOS_CONFIG
+  #   # can be a module
+  #   configuration = ./nixos-shell.nix;
 
-  });
+  # });
 
   # format expected by the testing infra
   # builtins.trace myVmConfig.config.virtualisation.qemu.networkingOptions
   tempNodes = {
-    main = myVmConfig;
+    main = import vm_config { inherit (pkgs) pkgs lib;};
   };
 
 in
